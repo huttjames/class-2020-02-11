@@ -7,24 +7,32 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(janitor)
+library(tidyverse)
 ```
 
-## R Markdown
+```{r}
+class_enrollment <- read_excel("class_enrollment_summary_by_term_2.11.20.xlsx", skip = 3, col_names = TRUE) 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+glimpse(class_enrollment)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+class_enrollment <- class_enrollment %>%
+  clean_names(case = c("lower_camel")) %>%
+  filter(!is.na(courseName))
 
-```{r cars}
-summary(cars)
+glimpse(class_enrollment)
+summary(class_enrollment)
+
+class_enrollment %>%
+  filter(courseDepartment == "Government") %>%
+  arrange(desc(total)) %>%
+  select(courseTitle, courseName, total) %>%
+  head(5)
+
+
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
